@@ -1,0 +1,28 @@
+# Ignore build and binary files
+bin/
+obj/
+out/
+
+# Ignore user-specific and IDE files
+.vs/
+.vscode/
+*.suo
+*.user
+*.csproj.user
+
+# Ignore logs, databases, and temp files
+*.log
+*.cache
+*.bak
+*.dbmdl
+*.opendb
+
+# Ignore secrets and environment config
+appsettings.Development.json
+secrets.json
+.env
+
+# Ignore package dependencies
+node_modules/
+packages/
+project.lock.json
