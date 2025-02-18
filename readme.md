@@ -2,7 +2,7 @@
 
 ## Overview
 
-This project is a **.NET Web API** using **Entity Framework Core (EF Core)** and a local **SQL database**. The API follows a structured design with **Models, DTOs, Mappers, Repositories, and Controllers**.
+This project is a **.NET Web API** using **ASP.NET Core 8.0**, **Entity Framework Core (EF Core)** and a local **SQL database**. The API follows a structured design with **Models, DTOs, Mappers, Repositories, and Controllers**.
 
 ## Project Structure
 
