@@ -22,9 +22,15 @@ namespace api.Services
         public TokenService(IConfiguration config)
         {
             _config = config;
-            _key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(_config["JWT:Key"] ?? ""));
-            _issuer = _config["JWT:Issuer"] ?? "";
-            _audience = _config["JWT:Audience"] ?? "";
+            var signingKey = _config["JWT:SigningKey"];
+
+            if (string.IsNullOrEmpty(signingKey))
+            {
+                throw new Exception("JWT:SigningKey is missing from configuration.");
+            }
+
+            _key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(signingKey));
+
         }
 
         // Method to create a JWT token for a given user
@@ -46,8 +52,8 @@ namespace api.Services
                 Subject = new ClaimsIdentity(claims), // Set claims
                 Expires = DateTime.Now.AddDays(7), // Set expiration date (7 days)
                 SigningCredentials = creds,
-                Issuer = _issuer,
-                Audience = _audience
+                Issuer = _config["JWT:Issuer"],
+                Audience = _config["JWT:Audience"]
             };
 
             // Create a token handler to generate the token
