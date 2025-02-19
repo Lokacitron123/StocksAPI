@@ -19,6 +19,7 @@ out/
 
 # Ignore secrets and environment config
 appsettings.Development.json
+appsettings.json
 secrets.json
 .env
 

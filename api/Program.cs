@@ -1,4 +1,3 @@
-using DotNetEnv;
 using api.Data;
 using api.Interfaces;
 using api.Repository;
@@ -7,16 +6,23 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using api.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 
-Env.Load();
 
-var connectionString = Env.GetString("DATABASE_CONNECTION") ?? builder.Configuration.GetConnectionString("DefaultConnection");
-var JWTSigninKey = Env.GetString("JWT_SIGNIN_KEY");
+// Vars
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+var JWTIssuer = builder.Configuration["JWT:Issuer"];
+var JWTAudience = builder.Configuration["JWT:Audience"];
+var JWTSigninKey = builder.Configuration["JWT:SigningKey"];
+if (string.IsNullOrEmpty(JWTSigninKey))
+{
+    throw new Exception("JWT Signing Key is missing from configuration.");
+}
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -42,6 +48,7 @@ builder.Services.AddIdentity<User, IdentityRole>(options =>
 })
 .AddEntityFrameworkStores<ApplicationDBContext>();
 
+// JWT Scheme
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme =
@@ -55,9 +62,9 @@ builder.Services.AddAuthentication(options =>
     options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuer = true,
-        ValidIssuer = builder.Configuration["JWT:Issuer"],
+        ValidIssuer = JWTIssuer,
         ValidateAudience = true,
-        ValidAudience = builder.Configuration["JWT:Audience"],
+        ValidAudience = JWTAudience,
         ValidateIssuerSigningKey = true,
         IssuerSigningKey = new SymmetricSecurityKey(
             System.Text.Encoding.UTF8.GetBytes(JWTSigninKey)
@@ -67,13 +74,14 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddScoped<IStockRepository, StockRepository>();
 builder.Services.AddScoped<ICommentRepository, CommentRepository>();
-
+builder.Services.AddScoped<ITokenService, TokenService>();
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
+    app.UseDeveloperExceptionPage();
     app.UseSwagger();
     app.UseSwaggerUI();
 }
