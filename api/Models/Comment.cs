@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace api.Models
 {
-    [Table("Tables")]
+    [Table("Comments")]
 
     public class Comment
     {
@@ -22,5 +22,9 @@ namespace api.Models
         public int? StockId { get; set; }
 
         public Stock? Stock { get; set; }
+
+        public string UserId { get; set; }
+
+        public User User { get; set; }
     }
 }
